@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>NEXAR ESPORTS</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --panel:#141416; --panel2:#1c1c1f; --line:#28282c;
+  --red:#e6392f; --red2:#c22a22; --gold:#e8b23d; --green:#3ec26f; --yellow:#e8b23d;
+  --text:#f2f0ec; --muted:#8a8a90;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;padding-top:var(--safe-t);}
+h1,h2,h3,.disp{font-family:'Rajdhani',sans-serif;font-weight:700;margin:0;}
+#app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;}
+.skew{clip-path:polygon(6% 0,100% 0,94% 100%,0 100%);}
+img{max-width:100%;}
+
+/* header */
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,10,11,.95);backdrop-filter:blur(8px);z-index:20;}
+.logo-box{width:38px;height:38px;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-weight:700;font-size:15px;border-radius:8px;}
+.brand{flex:1;line-height:1.1;}
+.brand b{font-size:15px;letter-spacing:.5px;}
+.brand span{font-size:10.5px;color:var(--red);letter-spacing:2px;font-weight:600;}
+.admin-tag{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:6px 12px 6px 16px;font-family:'Rajdhani';letter-spacing:1px;}
+.tg-ava{width:32px;height:32px;border-radius:50%;overflow:hidden;background:var(--panel2);border:1px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);}
+.tg-ava img{width:100%;height:100%;object-fit:cover;}
+.back-btn{width:32px;height:32px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text);}
+
+.content{padding:16px 16px 100px;}
+.subview{display:none;}
+.subview.active{display:block;}
+.tabview{display:none;}
+.tabview.active{display:block;}
+
+/* hero */
+.hero{background:linear-gradient(160deg,#1a1214,var(--bg) 65%);border:1px solid var(--line);border-radius:14px;padding:20px 18px;position:relative;overflow:hidden;margin-bottom:18px;}
+.hero::after{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(230,57,47,.25),transparent 70%);}
+.live-tag{display:inline-block;background:var(--red);color:#fff;font-family:'Rajdhani';font-weight:700;font-size:12.5px;letter-spacing:1.5px;padding:5px 14px 5px 18px;margin-bottom:12px;}
+.hero h1{font-size:26px;line-height:1.05;}
+.hero h1 .accent{color:var(--red);}
+.hero p{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.5;}
+
+/* search & filters */
+.search{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;margin-bottom:12px;}
+.search::placeholder{color:var(--muted);}
+.chiprow{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;scrollbar-width:none;}
+.chiprow::-webkit-scrollbar{display:none;}
+.chip{flex-shrink:0;padding:9px 16px 9px 20px;font-family:'Rajdhani';font-weight:700;font-size:13px;letter-spacing:.5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);cursor:pointer;}
+.chip.active{background:var(--red);color:#fff;border-color:var(--red);}
+.pillrow{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;scrollbar-width:none;}
+.pillrow::-webkit-scrollbar{display:none;}
+.pill{flex-shrink:0;padding:8px 15px;border-radius:20px;font-size:12.5px;font-weight:600;background:transparent;border:1px solid var(--line);color:var(--muted);cursor:pointer;white-space:nowrap;}
+.pill.active{border-color:var(--red);color:var(--red);background:rgba(230,57,47,.08);}
+
+/* hof card */
+.hof-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px;cursor:pointer;}
+.hof-card .ic{font-size:24px;}
+.hof-card b{display:block;font-size:14.5px;}
+.hof-card small{color:var(--muted);font-size:12px;}
+.hof-card .arrow{margin-left:auto;color:var(--gold);font-size:18px;}
+
+/* tournament card */
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px;cursor:pointer;}
+.tcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.mode-tag{font-family:'Rajdhani';font-weight:700;font-size:11px;letter-spacing:1px;color:var(--red);border:1px solid var(--red);padding:2px 8px;border-radius:4px;}
+.status-badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:'Rajdhani';letter-spacing:.5px;}
+.st-FAOL{background:rgba(62,194,111,.15);color:var(--green);}
+.st-TOLDI{background:rgba(232,178,61,.15);color:var(--gold);}
+.st-KUTILMOQDA{background:rgba(138,138,144,.15);color:var(--muted);}
+.st-YAKUNLANGAN{background:rgba(255,255,255,.06);color:var(--muted);}
+.tcard h3{font-size:16.5px;margin:2px 0 4px;}
+.tcard .meta{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap;}
+.tcard .meta b{color:var(--text);}
+.progress{height:5px;background:var(--panel2);border-radius:3px;margin-top:10px;overflow:hidden;}
+.progress i{display:block;height:100%;background:var(--red);}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 10px;}
+
+/* buttons */
+.btn{width:100%;padding:13px;border:none;border-radius:9px;background:var(--red);color:#fff;font-family:'Rajdhani';font-weight:700;font-size:15.5px;letter-spacing:.5px;cursor:pointer;text-align:center;}
+.btn:active{transform:scale(.98);}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
+.btn.gold{background:var(--gold);color:#171208;}
+.btn.danger{background:transparent;border:1px solid var(--red);color:var(--red);}
+.btn.sm{padding:9px;font-size:13px;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;}
+
+/* tournament detail */
+.detail-hero{border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.detail-hero .band{background:linear-gradient(135deg,#1a1214,#0e0e10);padding:18px;border:1px solid var(--line);border-radius:12px;}
+.countdown-box{display:flex;gap:8px;margin-top:12px;}
+.cd-unit{flex:1;background:var(--panel2);border-radius:8px;padding:8px 4px;text-align:center;}
+.cd-unit b{display:block;font-family:'Rajdhani';font-size:19px;color:var(--gold);}
+.cd-unit span{font-size:9.5px;color:var(--muted);letter-spacing:.5px;}
+.section-h{font-size:14.5px;margin:20px 0 10px;display:flex;justify-content:space-between;align-items:center;}
+.section-h small{color:var(--muted);font-size:12px;font-weight:500;font-family:'Inter';}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.slot{aspect-ratio:1;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;padding:4px;}
+.slot .num{position:absolute;top:3px;left:5px;font-size:9px;color:var(--muted);font-family:'Rajdhani';font-weight:700;}
+.slot.open{border-style:dashed;}
+.slot.open .plus{font-size:18px;color:var(--muted);}
+.slot.pending{border-color:var(--gold);background:rgba(232,178,61,.08);}
+.slot.pending .lbl{font-size:9px;color:var(--gold);font-weight:700;margin-top:2px;}
+.slot.occupied{border-color:var(--green);}
+.slot-ava{width:30px;height:30px;border-radius:50%;overflow:hidden;background:var(--panel2);margin-bottom:2px;}
+.slot-ava img{width:100%;height:100%;object-fit:cover;}
+.slot .nick{font-size:9px;text-align:center;line-height:1.1;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;}
+
+.room-box{background:rgba(62,194,111,.08);border:1px solid var(--green);border-radius:10px;padding:14px;margin-bottom:16px;}
+.room-box .row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;}
+.room-box .row span:first-child{color:var(--muted);}
+
+/* forms */
+label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 6px;}
+label:first-child{margin-top:0;}
+input[type=text],input[type=tel],input[type=number],select,textarea{
+  width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  border-radius:8px;padding:11px 12px;font-size:14.5px;font-family:'Inter';outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--red);}
+.file-drop{border:1.5px dashed var(--line);border-radius:8px;padding:16px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;position:relative;}
+.file-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.file-preview{max-height:120px;border-radius:8px;margin-top:8px;}
+.hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:flex-end;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal{width:100%;max-width:480px;background:var(--bg);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:18px 18px calc(20px + var(--safe-b));max-height:88vh;overflow-y:auto;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.modal-close{width:30px;height:30px;border-radius:50%;background:var(--panel2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:15px;}
+
+/* profile */
+.profile-head{display:flex;align-items:center;gap:14px;padding:4px 0 18px;}
+.p-ava{width:64px;height:64px;border-radius:50%;background:var(--panel2);border:2px solid var(--red);overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-size:24px;color:var(--red);}
+.p-ava img{width:100%;height:100%;object-fit:cover;}
+.p-name{font-size:18px;}
+.p-uname{color:var(--muted);font-size:13px;}
+.stat-row{display:flex;gap:10px;margin-bottom:18px;}
+.stat-box{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;}
+.stat-box b{display:block;font-family:'Rajdhani';font-size:20px;color:var(--red);}
+.stat-box span{font-size:10.5px;color:var(--muted);}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.badge-item{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 6px;text-align:center;opacity:.35;}
+.badge-item.on{opacity:1;border-color:var(--gold);background:rgba(232,178,61,.08);}
+.badge-item .ic{font-size:22px;display:block;margin-bottom:4px;}
+.badge-item span{font-size:9.5px;color:var(--muted);}
+.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.row:last-child{border-bottom:none;}
+.row span:first-child{color:var(--muted);}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;}
+.hist-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.hist-item:last-child{border-bottom:none;}
+.hist-item b{font-size:13px;}
+.tag-w{color:var(--green);font-weight:700;font-size:11.5px;}
+.tag-l{color:var(--muted);font-weight:700;font-size:11.5px;}
+
+.admin-row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer;}
+.admin-row .ic{font-size:20px;}
+.admin-row b{font-size:14px;display:block;}
+.admin-row small{color:var(--muted);font-size:11.5px;}
+.admin-row .arrow{margin-left:auto;color:var(--muted);}
+
+.app-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.app-row .top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.app-row .top b{font-size:14px;}
+.app-row .top small{display:block;color:var(--muted);font-size:11.5px;}
+.member-row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;}
+.member-row b{font-size:13.5px;display:block;}
+.member-row small{color:var(--muted);font-size:11px;}
+.mini-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.mini-badge{width:22px;height:22px;border-radius:5px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:12px;opacity:.3;cursor:pointer;border:1px solid var(--line);}
+.mini-badge.on{opacity:1;background:rgba(232,178,61,.15);border-color:var(--gold);}
+.ban-tag{font-size:10px;color:var(--red);font-weight:700;background:rgba(230,57,47,.12);padding:2px 8px;border-radius:10px;margin-left:auto;}
+
+/* tabbar */
+.tabbar{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:rgba(10,10,11,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding-bottom:var(--safe-b);z-index:30;}
+.tab{flex:1;text-align:center;padding:11px 0 9px;color:var(--muted);font-family:'Rajdhani';font-weight:700;font-size:12.5px;letter-spacing:1px;cursor:pointer;border-top:2px solid transparent;}
+.tab.active{color:var(--red);border-top-color:var(--red);}
+.tab .ic{display:block;font-size:19px;margin-bottom:2px;}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:11px 18px;border-radius:9px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200;max-width:82%;text-align:center;}
+.toast.show{opacity:1;}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap;}
+.legend span{display:flex;align-items:center;gap:5px;}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar" id="topbar">
+    <div class="logo-box">NX</div>
+    <div class="brand"><b>NEXAR</b><br><span>ESPORTS</span></div>
+    <div id="adminTagSlot"></div>
+    <div class="tg-ava" id="topAva">?</div>
+  </div>
+
+  <!-- ===== TURNIR TAB ===== -->
+  <div class="tabview active" id="tab-turnir">
+
+    <div class="subview active" id="sv-turnir-list">
+      <div class="content">
+        <div class="hero">
+          <div class="live-tag skew">🔥 LIVE SEASON</div>
+          <h1>PUBG MOBILE<br><span class="accent">TDM TURNIRLARI</span></h1>
+          <p>Slotni band qiling, setkada o'z o'rningizni oling.</p>
+        </div>
+
+        <div class="hof-card" onclick="go('turnir','hof')">
+          <div class="ic">👑</div>
+          <div><b>HALL OF FAME</b><small>Barcha chempionlar va top o'yinchilar</small></div>
+          <div class="arrow">→</div>
+        </div>
+
+        <input class="search" id="searchInput" placeholder="Turnir qidirish..." oninput="renderTurnirList()">
+
+        <div class="chiprow" id="catChips"></div>
+        <div class="pillrow" id="statusPills"></div>
+
+        <div id="tourneyList"></div>
+      </div>
+    </div>
+
+    <div class="subview" id="sv-turnir-detail">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('turnir','list')">←</div>
+        <div class="brand"><b id="detailTitle">Turnir</b></div>
+      </div>
+      <div class="content" id="detailContent"></div>
+    </div>
+
+    <div class="subview" id="sv-turnir-hof">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('turnir','list')">←</div>
+        <div class="brand"><b>Hall of Fame</b></div>
+      </div>
+      <div class="content" id="hofContent"></div>
+    </div>
+  </div>
+
+  <!-- ===== PROFIL TAB ===== -->
+  <div class="tabview" id="tab-profil">
+
+    <div class="subview active" id="sv-profil-main">
+      <div class="content" id="profilContent"></div>
+    </div>
+
+    <div class="subview" id="sv-admin-dash">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('profil','main')">←</div>
+        <div class="brand"><b>Admin panel</b></div>
+      </div>
+      <div class="content" id="adminDashContent"></div>
+    </div>
+
+    <div class="subview" id="sv-admin-edit">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('profil','admin-dash')">←</div>
+        <div class="brand"><b id="adminEditTitle">Turnir yaratish</b></div>
+      </div>
+      <div class="content" id="adminEditContent"></div>
+    </div>
+
+    <div class="subview" id="sv-admin-apps">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('profil','admin-dash')">←</div>
+        <div class="brand"><b>Arizalar</b></div>
+      </div>
+      <div class="content" id="adminAppsContent"></div>
+    </div>
+
+    <div class="subview" id="sv-admin-members">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('profil','admin-dash')">←</div>
+        <div class="brand"><b>A'zolar / Badge / Bloklash</b></div>
+      </div>
+      <div class="content" id="adminMembersContent"></div>
+    </div>
+
+    <div class="subview" id="sv-admin-hof">
+      <div class="topbar" style="border-bottom:1px solid var(--line);">
+        <div class="back-btn" onclick="go('profil','admin-dash')">←</div>
+        <div class="brand"><b>Hall of Fame boshqaruvi</b></div>
+      </div>
+      <div class="content" id="adminHofContent"></div>
+    </div>
+
+  </div>
+
+  <div class="tabbar">
+    <div class="tab active" data-tab="turnir" onclick="switchTab('turnir')"><span class="ic">🏆</span>TURNIR</div>
+    <div class="tab" data-tab="profil" onclick="switchTab('profil')"><span class="ic">👤</span>PROFIL</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-bg" id="applyModalBg">
+  <div class="modal">
+    <div class="modal-head"><h3>Slotga yozilish</h3><div class="modal-close" onclick="closeModal('applyModalBg')">✕</div></div>
+    <div id="applyModalBody"></div>
+  </div>
+</div>
+
+<!-- ROOM INFO MODAL -->
+<div class="modal-bg" id="roomModalBg">
+  <div class="modal">
+    <div class="modal-head"><h3>Xona ma'lumoti</h3><div class="modal-close" onclick="closeModal('roomModalBg')">✕</div></div>
+    <div id="roomModalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const ADMIN_ID = '7951717415';
+const BADGES = [
+  {id:'champ',ic:'🥇',name:'Chempion'},
+  {id:'sniper',ic:'🎯',name:'Snayper'},
+  {id:'mvp',ic:'🔥',name:'MVP'},
+  {id:'killer',ic:'💀',name:'Qotil'},
+  {id:'shield',ic:'🛡',name:'Himoyachi'},
+  {id:'fast',ic:'⚡',name:'Tezkor'},
+  {id:'brain',ic:'🧠',name:'Strateg'},
+  {id:'legend',ic:'👑',name:'Afsona'}
+];
+const CATS = ['HAMMASI','ELITE','PRO','GIRLS'];
+const STATUSES = ['FAOL','TOLDI','KUTILMOQDA','YAKUNLANGAN'];
+const ST_LABEL = {FAOL:"Faol",TOLDI:"To'ldi",KUTILMOQDA:"Kutilmoqda",YAKUNLANGAN:"Yakunlangan"};
+
+/* ================= TELEGRAM ================= */
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if(tg){ tg.ready(); tg.expand(); }
+const tgUser = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user
+  : (location.search.includes('admin_preview=1') ? {id:7951717415, first_name:'Admin', last_name:'Preview', username:'mirzhayev'} : null);
+const MY_ID = tgUser ? String(tgUser.id) : null;
+const isAdmin = MY_ID === ADMIN_ID;
+
+/* ================= STORAGE ================= */
+function db(key, def){ try{ const v = JSON.parse(localStorage.getItem('nexar_'+key)); return v===null?def:v; }catch(e){ return def; } }
+function setDb(key, val){ localStorage.setItem('nexar_'+key, JSON.stringify(val)); }
+
+function seed(){
+  if(db('tournaments', null)) return;
+  setDb('tournaments', [{
+    id:'t1', title:'CHINOR CUP #7', mode:'TDM', category:'ELITE', status:'FAOL',
+    slotCount:16, reserveCount:4,
+    slots: Array.from({length:16},()=>({status:'open'})),
+    reserve: Array.from({length:4},()=>({status:'open'})),
+    deadline: Date.now()+1000*60*60*30,
+    roomId:'', roomPass:'', createdAt: Date.now()
+  },{
+    id:'t2', title:"QIZLAR LIVIK KUBOGI", mode:'LIVIK', category:'GIRLS', status:'KUTILMOQDA',
+    slotCount:8, reserveCount:2,
+    slots: Array.from({length:8},()=>({status:'open'})),
+    reserve: Array.from({length:2},()=>({status:'open'})),
+    deadline: Date.now()+1000*60*60*80,
+    roomId:'', roomPass:'', createdAt: Date.now()
+  }]);
+  setDb('users', {});
+  setDb('applications', []);
+  setDb('hof', [
+    {id:'h1', title:'Sezon 6 chempioni', name:'SHADOW SQUAD', desc:'16 jamoa ichidan g\'olib chiqdi.'}
+  ]);
+}
+seed();
+
+function getUser(id){
+  const users = db('users',{});
+  return users[id] || {pubgNick:'', pubgId:'', wins:0, losses:0, badges:[], banned:false, history:[]};
+}
+function saveUser(id, data){
+  const users = db('users',{});
+  users[id] = Object.assign(getUser(id), data);
+  setDb('users', users);
+}
+if(MY_ID){
+  const u = getUser(MY_ID);
+  saveUser(MY_ID, {
+    tgUsername: tgUser.username||'', firstName: tgUser.first_name||'', lastName: tgUser.last_name||'', photo: tgUser.photo_url||''
+  });
+}
+
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+  if(tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+
+/* ================= NAV ================= */
+let state = { tab:'turnir', turnirSub:'list', profilSub:'main', activeTournament:null, catFilter:'HAMMASI', statusFilter:'ALL' };
+
+function switchTab(tab){
+  state.tab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.querySelectorAll('.tabview').forEach(v=>v.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab==='profil') renderProfil();
+}
+
+function go(tab, sub){
+  switchTab(tab);
+  if(tab==='turnir'){
+    state.turnirSub = sub;
+    ['list','detail','hof'].forEach(s=>document.getElementById('sv-turnir-'+s).classList.toggle('active', s===sub));
+    if(sub==='list') renderTurnirList();
+    if(sub==='hof') renderHof();
+  } else {
+    state.profilSub = sub;
+    document.querySelectorAll('#tab-profil .subview').forEach(v=>v.classList.remove('active'));
+    const map = {main:'sv-profil-main','admin-dash':'sv-admin-dash','admin-edit':'sv-admin-edit','admin-apps':'sv-admin-apps','admin-members':'sv-admin-members','admin-hof':'sv-admin-hof'};
+    document.getElementById(map[sub]).classList.add('active');
+    if(sub==='main') renderProfil();
+    if(sub==='admin-dash') renderAdminDash();
+    if(sub==='admin-members') renderAdminMembers();
+    if(sub==='admin-hof') renderAdminHof();
+  }
+}
+
+/* set admin tag + avatar in topbar */
+(function initTop(){
+  document.getElementById('adminTagSlot').innerHTML = isAdmin ? '<div class="admin-tag skew">✓ ADMIN</div>' : '';
+  const ava = document.getElementById('topAva');
+  if(tgUser && tgUser.photo_url) ava.innerHTML = `<img src="${tgUser.photo_url}">`;
+  else if(tgUser) ava.textContent = (tgUser.first_name||'?').charAt(0).toUpperCase();
+})();
+
+/* ================= COUNTDOWN ================= */
+function fmtCountdown(ms){
+  if(ms<=0) return {d:0,h:0,m:0,s:0,done:true};
+  const s=Math.floor(ms/1000)%60, m=Math.floor(ms/60000)%60, h=Math.floor(ms/3600000)%24, d=Math.floor(ms/86400000);
+  return {d,h,m,s,done:false};
+}
+setInterval(()=>{
+  document.querySelectorAll('[data-deadline]').forEach(el=>{
+    const dl = parseInt(el.dataset.deadline,10);
+    const c = fmtCountdown(dl - Date.now());
+    if(el.dataset.mode==='inline'){
+      el.textContent = c.done ? "Tugadi" : `${c.d}k ${c.h}s ${c.m}d qoldi`;
+    } else {
+      el.querySelector('.cd-d b').textContent=c.d; el.querySelector('.cd-h b').textContent=c.h;
+      el.querySelector('.cd-m b').textContent=c.m; el.querySelector('.cd-s b').textContent=c.s;
+    }
+  });
+},1000);
+
+/* ================= TURNIR LIST ================= */
+function renderTurnirList(){
+  const chipsEl = document.getElementById('catChips');
+  chipsEl.innerHTML = CATS.map(c=>`<div class="chip ${state.catFilter===c?'active':''}" onclick="setCat('${c}')">${c}</div>`).join('');
+  const pillsEl = document.getElementById('statusPills');
+  const pillDefs = [['ALL','Barcha holat'],['FAOL',"Faol"],['KUTILMOQDA','Kutilmoqda'],['TOLDI',"To'ldi"],['YAKUNLANGAN','Yakunlangan']];
+  pillsEl.innerHTML = pillDefs.map(([k,l])=>`<div class="pill ${state.statusFilter===k?'active':''}" onclick="setStatus('${k}')">${l}</div>`).join('');
+
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  let list = db('tournaments',[]).slice().sort((a,b)=>b.createdAt-a.createdAt);
+  if(state.catFilter!=='HAMMASI') list = list.filter(t=>t.category===state.catFilter);
+  if(state.statusFilter!=='ALL') list = list.filter(t=>t.status===state.statusFilter);
+  if(q) list = list.filter(t=>t.title.toLowerCase().includes(q));
+
+  const wrap = document.getElementById('tourneyList');
+  if(list.length===0){ wrap.innerHTML='<div class="empty">Hech qanday turnir topilmadi.</div>'; return; }
+  wrap.innerHTML = list.map(t=>{
+    const filled = t.slots.filter(s=>s.status==='occupied').length;
+    const pct = Math.round(filled/t.slotCount*100);
+    return `<div class="tcard" onclick="openTournament('${t.id}')">
+      <div class="tcard-top">
+        <span class="mode-tag">${t.mode}</span>
+        <span class="status-badge st-${t.status}">${ST_LABEL[t.status]}</span>
+      </div>
+      <h3>${t.title}</h3>
+      <div class="meta">
+        <div>Kategoriya: <b>${t.category}</b></div>
+        <div>Slot: <b>${filled}/${t.slotCount}</b></div>
+        <div data-deadline="${t.deadline}" data-mode="inline">—</div>
+      </div>
+      <div class="progress"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }).join('');
+}
+function setCat(c){ state.catFilter=c; renderTurnirList(); }
+function setStatus(s){ state.statusFilter=s; renderTurnirList(); }
+
+/* ================= TOURNAMENT DETAIL ================= */
+function openTournament(id){
+  state.activeTournament = id;
+  go('turnir','detail');
+  renderDetail();
+}
+function renderDetail(){
+  const t = db('tournaments',[]).find(x=>x.id===state.activeTournament);
+  if(!t){ go('turnir','list'); return; }
+  document.getElementById('detailTitle').textContent = t.title;
+  const filled = t.slots.filter(s=>s.status==='occupied').length;
+  const myApp = db('applications',[]).find(a=>a.tournamentId===t.id && a.tgId===MY_ID && a.status==='pending');
+  const myMainSlot = t.slots.findIndex(s=>s.tgId===MY_ID);
+  const myReserveSlot = t.reserve.findIndex(s=>s.tgId===MY_ID);
+
+  let roomHtml='';
+  if((myMainSlot>-1||myReserveSlot>-1) && t.roomId){
+    roomHtml = `<div class="room-box">
+      <b style="font-family:'Rajdhani';">🔓 Xona ochildi</b>
+      <div class="row"><span>Room ID</span><span>${t.roomId}</span></div>
+      <div class="row"><span>Parol</span><span>${t.roomPass||'—'}</span></div>
+    </div>`;
+  }
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-hero"><div class="band">
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <span class="mode-tag">${t.mode}</span>
+        <span class="status-badge st-${t.status}">${ST_LABEL[t.status]}</span>
+      </div>
+      <h2 style="font-size:20px;">${t.title}</h2>
+      <div style="color:var(--muted);font-size:12.5px;margin-top:4px;">Kategoriya: ${t.category} &middot; ${filled}/${t.slotCount} band</div>
+      <div class="countdown-box" data-deadline="${t.deadline}">
+        <div class="cd-unit cd-d"><b>0</b><span>KUN</span></div>
+        <div class="cd-unit cd-h"><b>0</b><span>SOAT</span></div>
+        <div class="cd-unit cd-m"><b>0</b><span>DAQ</span></div>
+        <div class="cd-unit cd-s"><b>0</b><span>SON</span></div>
+      </div>
+    </div></div>
+
+    ${roomHtml}
+    ${myApp?'<div class="card" style="border-color:var(--gold);"><b style="color:var(--gold);">⏳ Arizangiz ko\'rib chiqilmoqda</b></div>':''}
+
+    <div class="legend">
+      <span><i style="background:var(--panel2);border:1.5px dashed var(--line);"></i>Bo'sh</span>
+      <span><i style="background:rgba(232,178,61,.3);border:1.5px solid var(--gold);"></i>Kutilmoqda</span>
+      <span><i style="background:rgba(62,194,111,.3);border:1.5px solid var(--green);"></i>Band</span>
+    </div>
+
+    <div class="section-h">Asosiy setka <small>${t.slotCount} o'rin</small></div>
+    <div class="grid" id="mainGrid"></div>
+
+    ${t.reserveCount>0?`<div class="section-h">Zaxira <small>${t.reserveCount} o'rin</small></div><div class="grid" id="reserveGrid"></div>`:''}
+  `;
+  renderSlotGrid(t,'slots','mainGrid');
+  if(t.reserveCount>0) renderSlotGrid(t,'reserve','reserveGrid');
+}
+
+function renderSlotGrid(t, key, gridId){
+  const arr = t[key];
+  document.getElementById(gridId).innerHTML = arr.map((s,i)=>{
+    if(s.status==='occupied'){
+      return `<div class="slot occupied">
+        <div class="num">${i+1}</div>
+        <div class="slot-ava">${s.photo?`<img src="${s.photo}">`:''}</div>
+        <div class="nick">${s.nick||'—'}</div>
+      </div>`;
+    }
+    if(s.status==='pending'){
+      return `<div class="slot pending"><div class="num">${i+1}</div><div class="lbl">⏳</div><div class="nick">${s.nick||''}</div></div>`;
+    }
+    return `<div class="slot open" onclick="openApplyModal('${t.id}','${key}',${i})"><div class="num">${i+1}</div><div class="plus">+</div></div>`;
+  }).join('');
+}
+
+/* ================= APPLY MODAL ================= */
+function openApplyModal(tId, slotKey, slotIndex){
+  if(!MY_ID){ toast("Telegram orqali oching, iltimos"); return; }
+  const users = db('users',{});
+  const me = getUser(MY_ID);
+  if(me.banned){ toast("Siz bloklangansiz"); return; }
+  const already = db('applications',[]).find(a=>a.tournamentId===tId && a.tgId===MY_ID && a.status==='pending');
+  if(already){ toast("Sizda allaqachon kutilayotgan ariza bor"); return; }
+
+  document.getElementById('applyModalBody').innerHTML = `
+    <label>PUBG nickname</label>
+    <input type="text" id="af_nick" value="${me.pubgNick||''}" placeholder="Nickname">
+    <label>PUBG ID (faqat raqam)</label>
+    <input type="text" inputmode="numeric" id="af_pid" value="${me.pubgId||''}" placeholder="5-10 xonali ID" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+    <label>Telegram ID</label>
+    <input type="text" value="${MY_ID}" disabled style="opacity:.6;">
+    <label>Skrinshot (ixtiyoriy)</label>
+    <div class="file-drop" id="af_dropzone">📎 Rasm yuklash uchun bosing<input type="file" accept="image/*" id="af_file" onchange="previewFile(this)"></div>
+    <img id="af_preview" class="file-preview" style="display:none;">
+    <button class="btn" style="margin-top:18px;" onclick="submitApplication('${tId}','${slotKey}',${slotIndex})">Yuborish</button>
+  `;
+  openModal('applyModalBg');
+}
+let _pendingFileData = null;
+function previewFile(input){
+  const f = input.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    _pendingFileData = e.target.result;
+    const img = document.getElementById('af_preview');
+    img.src = e.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(f);
+}
+function submitApplication(tId, slotKey, slotIndex){
+  const nick = document.getElementById('af_nick').value.trim();
+  const pid = document.getElementById('af_pid').value.trim();
+  if(!nick || pid.length<4){ toast("Nickname va PUBG ID to'g'ri kiritilsin"); return; }
+
+  const tournaments = db('tournaments',[]);
+  const t = tournaments.find(x=>x.id===tId);
+  if(!t || t[slotKey][slotIndex].status!=='open'){ toast("Bu slot band bo'lib qoldi"); closeModal('applyModalBg'); renderDetail(); return; }
+
+  t[slotKey][slotIndex].status='pending';
+  t[slotKey][slotIndex].nick=nick;
+  setDb('tournaments', tournaments);
+
+  const apps = db('applications',[]);
+  apps.push({
+    id:'a'+Date.now(), tournamentId:tId, slotKey, slotIndex,
+    tgId:MY_ID, username:tgUser.username||'', pubgNick:nick, pubgId:pid,
+    screenshot:_pendingFileData||null, status:'pending', createdAt:Date.now()
+  });
+  setDb('applications', apps);
+  saveUser(MY_ID,{pubgNick:nick, pubgId:pid});
+
+  closeModal('applyModalBg'); _pendingFileData=null;
+  toast("Ariza yuborildi, tasdiqlanishini kuting");
+  renderDetail();
+}
+
+/* ================= HALL OF FAME (public) ================= */
+function renderHof(){
+  const list = db('hof',[]);
+  document.getElementById('hofContent').innerHTML = list.length? list.map(h=>`
+    <div class="card">
+      <b style="font-family:'Rajdhani';font-size:16px;color:var(--gold);">👑 ${h.title}</b>
+      <div style="font-size:15px;margin-top:4px;">${h.name}</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-top:4px;">${h.desc||''}</div>
+    </div>`).join('') : '<div class="empty">Hozircha yozuvlar yo\'q.</div>';
+}
+
+/* ================= PROFIL ================= */
+function renderProfil(){
+  if(!tgUser){
+    document.getElementById('profilContent').innerHTML = '<div class="empty">Profilni ko\'rish uchun mini-appni Telegram bot ichida oching.</div>';
+    return;
+  }
+  const me = getUser(MY_ID);
+  const total = me.wins+me.losses;
+  const winrate = total? Math.round(me.wins/total*100):0;
+
+  document.getElementById('profilContent').innerHTML = `
+    <div class="profile-head">
+      <div class="p-ava">${tgUser.photo_url?`<img src="${tgUser.photo_url}">`:(tgUser.first_name||'?').charAt(0).toUpperCase()}</div>
+      <div>
+        <div class="p-name disp">${[tgUser.first_name,tgUser.last_name].filter(Boolean).join(' ')}</div>
+        <div class="p-uname">${tgUser.username?'@'+tgUser.username:'username yo\'q'}</div>
+        ${me.banned?'<span class="ban-tag">BLOKLANGAN</span>':''}
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box"><b>${me.wins}</b><span>G'ALABA</span></div>
+      <div class="stat-box"><b>${me.losses}</b><span>MAG'LUBIYAT</span></div>
+      <div class="stat-box"><b>${winrate}%</b><span>WINRATE</span></div>
+    </div>
+
+    <div class="section-h">PUBG profil</div>
+    <div class="card">
+      <label>PUBG nickname</label>
+      <input type="text" id="pf_nick" value="${me.pubgNick||''}" placeholder="Nickname">
+      <label>PUBG ID</label>
+      <input type="text" inputmode="numeric" id="pf_pid" value="${me.pubgId||''}" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      <button class="btn sm" style="margin-top:12px;" onclick="savePubgProfile()">Saqlash</button>
+    </div>
+
+    <div class="section-h">Yutuqlar <small>${me.badges.length}/8</small></div>
+    <div class="badge-grid">
+      ${BADGES.map(b=>`<div class="badge-item ${me.badges.includes(b.id)?'on':''}"><span class="ic">${b.ic}</span><span>${b.name}</span></div>`).join('')}
+    </div>
+
+    <div class="section-h">Match tarixi</div>
+    <div class="card">
+      ${me.history && me.history.length ? me.history.map(h=>`
+        <div class="hist-item"><b>${h.title}</b><span class="${h.result==='win'?'tag-w':'tag-l'}">${h.result==='win'?"G'ALABA":'MAG\'LUBIYAT'}</span></div>
+      `).join('') : '<div class="empty" style="padding:16px;">Hali o\'yin tarixi yo\'q.</div>'}
+    </div>
+
+    <button class="btn ghost" style="margin-bottom:10px;" onclick="openSOS()">🆘 SOS / Yordam</button>
+    ${isAdmin?'<button class="btn gold" onclick="go(\'profil\',\'admin-dash\')">⚙️ Admin panel</button>':''}
+  `;
+}
+function savePubgProfile(){
+  const nick = document.getElementById('pf_nick').value.trim();
+  const pid = document.getElementById('pf_pid').value.trim();
+  saveUser(MY_ID, {pubgNick:nick, pubgId:pid});
+  toast("Profil saqlandi");
+}
+function openSOS(){
+  if(tg && tg.openTelegramLink) tg.openTelegramLink('https://t.me/mirzhayev');
+  else window.open('https://t.me/mirzhayev','_blank');
+}
+
+/* ================= ADMIN: DASHBOARD ================= */
+function renderAdminDash(){
+  if(!isAdmin){ go('profil','main'); return; }
+  const tournaments = db('tournaments',[]);
+  const pendingCount = db('applications',[]).filter(a=>a.status==='pending').length;
+  document.getElementById('adminDashContent').innerHTML = `
+    <button class="btn" style="margin-bottom:16px;" onclick="openEditTournament(null)">+ Yangi turnir yaratish</button>
+
+    <div class="admin-row" onclick="go('profil','admin-members')"><div class="ic">👥</div><div><b>A'zolar / Badge / Bloklash</b><small>Foydalanuvchilarni boshqarish</small></div><div class="arrow">›</div></div>
+    <div class="admin-row" onclick="go('profil','admin-hof')"><div class="ic">👑</div><div><b>Hall of Fame</b><small>Chempionlar ro'yxati</small></div><div class="arrow">›</div></div>
+
+    <div class="section-h">Turnirlar</div>
+    ${tournaments.map(t=>{
+      const pend = db('applications',[]).filter(a=>a.tournamentId===t.id && a.status==='pending').length;
+      const filled = t.slots.filter(s=>s.status==='occupied').length;
+      return `<div class="tcard">
+        <div class="tcard-top"><span class="mode-tag">${t.mode}</span><span class="status-badge st-${t.status}">${ST_LABEL[t.status]}</span></div>
+        <h3>${t.title}</h3>
+        <div class="meta"><div>Slot: <b>${filled}/${t.slotCount}</b></div><div>Arizalar: <b>${pend}</b></div></div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn ghost sm" onclick="openEditTournament('${t.id}')">Tahrirlash</button>
+          <button class="btn gold sm" onclick="go('profil','admin-apps');state.adminAppsFor='${t.id}';renderAdminApps();">Arizalar (${pend})</button>
+          <button class="btn danger sm" onclick="deleteTournament('${t.id}')">O'chirish</button>
+        </div>
+      </div>`;
+    }).join('') || '<div class="empty">Turnirlar yo\'q</div>'}
+  `;
+}
+function deleteTournament(id){
+  if(!confirm('Turnirni o\'chirishni tasdiqlaysizmi?')) return;
+  setDb('tournaments', db('tournaments',[]).filter(t=>t.id!==id));
+  setDb('applications', db('applications',[]).filter(a=>a.tournamentId!==id));
+  renderAdminDash(); toast('Turnir o\'chirildi');
+}
+
+/* ================= ADMIN: CREATE/EDIT TOURNAMENT ================= */
+function openEditTournament(id){
+  state.editingId = id;
+  const t = id ? db('tournaments',[]).find(x=>x.id===id) : null;
+  document.getElementById('adminEditTitle').textContent = id ? 'Turnirni tahrirlash' : 'Yangi turnir';
+  document.getElementById('adminEditContent').innerHTML = `
+    <label>Turnir nomi</label>
+    <input type="text" id="e_title" value="${t?t.title:''}" placeholder="Masalan: CHINOR CUP #8">
+    <label>Rejim</label>
+    <select id="e_mode">
+      <option ${t&&t.mode==='TDM'?'selected':''}>TDM</option>
+      <option ${t&&t.mode==='LIVIK'?'selected':''}>LIVIK</option>
+      <option ${t&&t.mode==='CUSTOM'?'selected':''}>CUSTOM</option>
+    </select>
+    <label>Kategoriya</label>
+    <select id="e_cat">${CATS.filter(c=>c!=='HAMMASI').map(c=>`<option ${t&&t.category===c?'selected':''}>${c}</option>`).join('')}</select>
+    <label>Status</label>
+    <select id="e_status">${STATUSES.map(s=>`<option value="${s}" ${t&&t.status===s?'selected':''}>${ST_LABEL[s]}</option>`).join('')}</select>
+    <label>Asosiy slotlar soni</label>
+    <input type="number" id="e_slots" value="${t?t.slotCount:16}" min="2" max="100">
+    <label>Zaxira slotlar soni</label>
+    <input type="number" id="e_reserve" value="${t?t.reserveCount:4}" min="0" max="30">
+    <label>Tugash sanasi va vaqti</label>
+    <input type="text" id="e_deadline" placeholder="YYYY-MM-DD HH:MM" value="${t?new Date(t.deadline).toISOString().slice(0,16).replace('T',' '):''}">
+    <label>Room ID</label>
+    <input type="text" id="e_roomid" value="${t?t.roomId:''}" placeholder="Hozircha bo'sh qoldiring">
+    <label>Room parol</label>
+    <input type="text" id="e_roompass" value="${t?t.roomPass:''}" placeholder="Hozircha bo'sh qoldiring">
+    <button class="btn" style="margin-top:18px;" onclick="saveTournament()">${t?'Saqlash':"Yaratish"}</button>
+  `;
+  go('profil','admin-edit');
+}
+function saveTournament(){
+  const title = document.getElementById('e_title').value.trim();
+  if(!title){ toast('Nom kiriting'); return; }
+  const mode = document.getElementById('e_mode').value;
+  const category = document.getElementById('e_cat').value;
+  const status = document.getElementById('e_status').value;
+  const slotCount = Math.max(2, parseInt(document.getElementById('e_slots').value||16,10));
+  const reserveCount = Math.max(0, parseInt(document.getElementById('e_reserve').value||0,10));
+  const dlRaw = document.getElementById('e_deadline').value.trim();
+  const deadline = dlRaw ? new Date(dlRaw.replace(' ','T')).getTime() : Date.now()+86400000;
+  const roomId = document.getElementById('e_roomid').value.trim();
+  const roomPass = document.getElementById('e_roompass').value.trim();
+
+  const tournaments = db('tournaments',[]);
+  if(state.editingId){
+    const t = tournaments.find(x=>x.id===state.editingId);
+    t.title=title; t.mode=mode; t.category=category; t.status=status; t.deadline=deadline; t.roomId=roomId; t.roomPass=roomPass;
+    if(slotCount!==t.slotCount){
+      const cur=t.slots;
+      t.slots = Array.from({length:slotCount},(_,i)=>cur[i]||{status:'open'});
+      t.slotCount = slotCount;
+    }
+    if(reserveCount!==t.reserveCount){
+      const cur=t.reserve;
+      t.reserve = Array.from({length:reserveCount},(_,i)=>cur[i]||{status:'open'});
+      t.reserveCount = reserveCount;
+    }
+  } else {
+    tournaments.push({
+      id:'t'+Date.now(), title, mode, category, status, slotCount, reserveCount,
+      slots:Array.from({length:slotCount},()=>({status:'open'})),
+      reserve:Array.from({length:reserveCount},()=>({status:'open'})),
+      deadline, roomId, roomPass, createdAt:Date.now()
+    });
+  }
+  setDb('tournaments', tournaments);
+  toast('Saqlandi'); go('profil','admin-dash');
+}
+
+/* ================= ADMIN: APPLICATIONS ================= */
+function renderAdminApps(){
+  const tId = state.adminAppsFor;
+  const apps = db('applications',[]).filter(a=>a.tournamentId===tId && a.status==='pending');
+  const t = db('tournaments',[]).find(x=>x.id===tId);
+  document.getElementById('adminAppsContent').innerHTML = `<div class="section-h">${t?t.title:''} <small>${apps.length} ta kutilmoqda</small></div>` +
+   (apps.length? apps.map(a=>`
+    <div class="app-row">
+      <div class="top">
+        <div class="tg-ava">${a.screenshot?'':''}</div>
+        <div><b>${a.pubgNick}</b><small>PUBG ID: ${a.pubgId} &middot; @${a.username||'—'} &middot; slot ${(a.slotKey==='reserve'?'Z':'')}${a.slotIndex+1}</small></div>
+      </div>
+      ${a.screenshot?`<img src="${a.screenshot}" class="file-preview" style="margin-bottom:8px;">`:''}
+      <div class="btn-row">
+        <button class="btn sm" style="background:var(--green);" onclick="decideApp('${a.id}',true)">✓ Tasdiqlash</button>
+        <button class="btn danger sm" onclick="decideApp('${a.id}',false)">✕ Rad etish</button>
+      </div>
+    </div>
+  `).join('') : '<div class="empty">Kutilayotgan arizalar yo\'q</div>');
+}
+function decideApp(appId, approve){
+  const apps = db('applications',[]);
+  const a = apps.find(x=>x.id===appId);
+  const tournaments = db('tournaments',[]);
+  const t = tournaments.find(x=>x.id===a.tournamentId);
+  const slot = t[a.slotKey][a.slotIndex];
+  if(approve){
+    slot.status='occupied'; slot.tgId=a.tgId; slot.nick=a.pubgNick;
+    const u = getUser(a.tgId); slot.photo = u.photo || '';
+  } else {
+    slot.status='open'; slot.nick=''; slot.tgId=null;
+  }
+  a.status = approve?'approved':'rejected';
+  setDb('tournaments', tournaments); setDb('applications', apps);
+  toast(approve?'Tasdiqlandi':'Rad etildi');
+  renderAdminApps();
+}
+
+/* ================= ADMIN: MEMBERS ================= */
+function renderAdminMembers(){
+  const users = db('users',{});
+  const ids = Object.keys(users);
+  document.getElementById('adminMembersContent').innerHTML = ids.length? ids.map(id=>{
+    const u = users[id];
+    return `<div class="member-row">
+      <div class="tg-ava">${u.photo?`<img src="${u.photo}">`:''}</div>
+      <div style="flex:1;">
+        <b>${[u.firstName,u.lastName].filter(Boolean).join(' ')||'—'}</b>
+        <small>@${u.tgUsername||'—'} &middot; ID ${id} &middot; PUBG: ${u.pubgNick||'—'}</small>
+        <div class="mini-badges">
+          ${BADGES.map(b=>`<div class="mini-badge ${u.badges.includes(b.id)?'on':''}" onclick="toggleBadge('${id}','${b.id}')" title="${b.name}">${b.ic}</div>`).join('')}
+        </div>
+      </div>
+      ${u.banned?`<div class="ban-tag" style="cursor:pointer;" onclick="toggleBan('${id}')">BLOKLANGAN ✕</div>`:`<button class="btn danger sm" style="width:auto;padding:6px 10px;" onclick="toggleBan('${id}')">Bloklash</button>`}
+    </div>`;
+  }).join('') : '<div class="empty">Hali foydalanuvchilar yo\'q</div>';
+}
+function toggleBadge(id, badgeId){
+  const users = db('users',{}); const u = users[id];
+  if(u.badges.includes(badgeId)) u.badges = u.badges.filter(b=>b!==badgeId);
+  else u.badges.push(badgeId);
+  setDb('users', users); renderAdminMembers();
+}
+function toggleBan(id){
+  const users = db('users',{}); users[id].banned = !users[id].banned;
+  setDb('users', users); renderAdminMembers();
+}
+
+/* ================= ADMIN: HALL OF FAME ================= */
+function renderAdminHof(){
+  const list = db('hof',[]);
+  document.getElementById('adminHofContent').innerHTML = `
+    <div class="card">
+      <label>Sarlavha</label><input type="text" id="h_title" placeholder="Masalan: Sezon 7 chempioni">
+      <label>Jamoa / o'yinchi nomi</label><input type="text" id="h_name" placeholder="Nomi">
+      <label>Tavsif</label><input type="text" id="h_desc" placeholder="Qisqacha">
+      <button class="btn sm" style="margin-top:12px;" onclick="addHof()">+ Qo'shish</button>
+    </div>
+    ${list.map(h=>`<div class="card">
+      <b style="color:var(--gold);">👑 ${h.title}</b>
+      <div style="margin-top:4px;">${h.name}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;">${h.desc||''}</div>
+      <button class="btn danger sm" style="margin-top:10px;" onclick="deleteHof('${h.id}')">O'chirish</button>
+    </div>`).join('')}
+  `;
+}
+function addHof(){
+  const title=document.getElementById('h_title').value.trim();
+  const name=document.getElementById('h_name').value.trim();
+  const desc=document.getElementById('h_desc').value.trim();
+  if(!title||!name){ toast('Maydonlarni to\'ldiring'); return; }
+  const list = db('hof',[]); list.unshift({id:'h'+Date.now(),title,name,desc}); setDb('hof',list);
+  renderAdminHof(); toast('Qo\'shildi');
+}
+function deleteHof(id){
+  setDb('hof', db('hof',[]).filter(h=>h.id!==id)); renderAdminHof();
+}
+
+/* ================= INIT ================= */
+renderTurnirList();
+</script>
+</body>
+</html>
